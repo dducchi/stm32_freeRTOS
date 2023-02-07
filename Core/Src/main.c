@@ -78,7 +78,7 @@ void FunctionB(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t valueAdc[2];
+uint16_t valueAdc[500];
 /* USER CODE END 0 */
 
 /**
@@ -113,7 +113,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-HAL_ADC_Start_DMA(&hadc1, valueAdc, 2);
+HAL_ADC_Start_DMA(&hadc1, valueAdc, 500);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -224,13 +224,13 @@ static void MX_ADC1_Init(void)
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc1.Init.ScanConvMode = ENABLE;
+  hadc1.Init.ScanConvMode = DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 2;
+  hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -242,16 +242,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = 2;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -342,8 +333,9 @@ void FunctionA(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	printf("%d %d\n", valueAdc[0], valueAdc[1]);
-    osDelay(320);
+	for(int i = 0; i <500; i++) {
+		printf("%d\n", valueAdc[i]);
+		osDelay(1);
   }
   /* USER CODE END 5 */
 }
@@ -365,10 +357,10 @@ void FunctionB(void *argument)
   {
 	  //count ++;
 	  //osthreadflagsset(taskahandle, count);
-	if(valueAdc[0] < 300 && valueAdc[1] < 500) printf("heater on\n");
+	/*if(valueAdc[0] < 300 && valueAdc[1] < 500) printf("heater on\n");
 	if(valueAdc[0] > 400 && valueAdc[1] < 500) printf("heater off\n");
 	if(valueAdc[0] < 380 && valueAdc[1] > 500) printf("fan off\n");
-	if(valueAdc[0] > 400 && valueAdc[1] > 550) printf("fan on\n");
+	if(valueAdc[0] > 400 && valueAdc[1] > 550) printf("fan on\n"); */
     osDelay(1000);
   }
   /* USER CODE END FunctionB */
